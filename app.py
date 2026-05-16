@@ -159,7 +159,10 @@ with left_col:
         minimum_nights = st.number_input(
             "Minimum Nights",
             min_value=1,
-            value=1
+            max_value=365,
+            value=1,
+            step=1,
+            help="Minimum nights must be between 1 and 365."
         )
 
     with col2:
@@ -179,13 +182,18 @@ with left_col:
             "Availability Per Year",
             min_value=0,
             max_value=365,
-            value=100
+            value=100,
+            step=1,
+            help="Availability must be between 0 and 365 days."
         )
 
         calculated_host_listings_count = st.number_input(
             "Host Listings Count",
             min_value=1,
-            value=1
+            max_value=500,
+            value=1,
+            step=1,
+            help="Host listing count must be between 1 and 500."
         )
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -199,15 +207,21 @@ with left_col:
         number_of_reviews = st.number_input(
             "Number of Reviews",
             min_value=0,
-            value=0
+            max_value=1000,
+            value=0,
+            step=1,
+            help="Number of reviews must be between 0 and 1000."
         )
 
     with review_col2:
         reviews_per_month = st.number_input(
             "Reviews Per Month",
             min_value=0.0,
+            max_value=60.0,
             value=0.0,
-            step=0.1
+            step=0.1,
+            format="%.2f",
+            help="Reviews per month must be between 0.00 and 60.00."
         )
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -242,6 +256,28 @@ with right_col:
 # Prediction logic
 # -----------------------------
 if predict_button:
+
+    validation_errors = []
+
+    if minimum_nights < 1 or minimum_nights > 365:
+        validation_errors.append("Minimum nights must be between 1 and 365.")
+
+    if number_of_reviews < 0 or number_of_reviews > 1000:
+        validation_errors.append("Number of reviews must be between 0 and 1000.")
+
+    if reviews_per_month < 0 or reviews_per_month > 60:
+        validation_errors.append("Reviews per month must be between 0 and 60.")
+
+    if calculated_host_listings_count < 1 or calculated_host_listings_count > 500:
+        validation_errors.append("Host listings count must be between 1 and 500.")
+
+    if availability_365 < 0 or availability_365 > 365:
+        validation_errors.append("Availability must be between 0 and 365.")
+
+    if validation_errors:
+        for error in validation_errors:
+            st.error(error)
+        st.stop()
 
     input_data = {col: 0 for col in feature_columns}
 
