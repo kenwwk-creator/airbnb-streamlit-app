@@ -216,27 +216,28 @@ with left_col:
 
 with right_col:
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.subheader("🗺️ Selected Location Preview")
-
-    map_df = pd.DataFrame({
-        "lat": [latitude],
-        "lon": [longitude]
-    })
-
-    st.map(map_df, zoom=10)
+    st.subheader("🏘️ Listing Preview")
 
     st.markdown(
         f"""
         <p class="small-text">
-        Selected area: <b>{neighbourhood}, {neighbourhood_group}</b><br>
-        Room type: <b>{room_type}</b>
+        <b>Neighbourhood Group:</b> {neighbourhood_group}<br>
+        <b>Neighbourhood:</b> {neighbourhood}<br>
+        <b>Room Type:</b> {room_type}<br>
+        <b>Latitude:</b> {latitude:.4f}<br>
+        <b>Longitude:</b> {longitude:.4f}<br>
+        <b>Availability:</b> {availability_365} days per year
         </p>
         """,
         unsafe_allow_html=True
     )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.write(
+        "This preview summarizes the selected Airbnb listing information before prediction."
+    )
 
+    st.markdown("</div>", unsafe_allow_html=True)
 # -----------------------------
 # Prediction logic
 # -----------------------------
