@@ -12,7 +12,77 @@ import pandas as pd
 import numpy as np
 import joblib
 
-# Load saved model bundle
+# -----------------------------
+# Page configuration
+# -----------------------------
+st.set_page_config(
+    page_title="Airbnb NYC Price Predictor",
+    page_icon="🏠",
+    layout="wide"
+)
+
+# -----------------------------
+# Custom CSS
+# -----------------------------
+st.markdown(
+    """
+    <style>
+    .main-title {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        color: #B0B0B0;
+        margin-bottom: 30px;
+    }
+
+    .section-card {
+        background-color: #1E1E2F;
+        padding: 25px;
+        border-radius: 18px;
+        border: 1px solid #33334D;
+        box-shadow: 0px 4px 20px rgba(0,0,0,0.25);
+        margin-bottom: 20px;
+    }
+
+    .prediction-card {
+        background: linear-gradient(135deg, #0F9D58, #0B6E3D);
+        padding: 30px;
+        border-radius: 20px;
+        color: white;
+        text-align: center;
+        box-shadow: 0px 4px 25px rgba(0,0,0,0.35);
+    }
+
+    .prediction-price {
+        font-size: 46px;
+        font-weight: 800;
+        margin-top: 10px;
+    }
+
+    .small-text {
+        color: #B0B0B0;
+        font-size: 14px;
+    }
+
+    div.stButton > button {
+        width: 100%;
+        height: 3em;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# -----------------------------
+# Load model bundle
+# -----------------------------
 bundle = joblib.load("airbnb_price_model.pkl")
 
 model = bundle["model"]
@@ -20,37 +90,158 @@ feature_columns = bundle["feature_columns"]
 neighbourhood_price_map = bundle["neighbourhood_price_map"]
 default_neighbourhood_encoded = bundle["default_neighbourhood_encoded"]
 
-st.title("Airbnb NYC Price Prediction App")
-st.write("Enter listing details to estimate the Airbnb price.")
+# -----------------------------
+# Sidebar
+# -----------------------------
+with st.sidebar:
+    st.title("🏠 Airbnb Price Predictor")
+    st.write(
+        "This app estimates Airbnb listing prices in New York City using a trained machine learning model."
+    )
 
-# User inputs
-latitude = st.number_input("Latitude", value=40.7128)
-longitude = st.number_input("Longitude", value=-74.0060)
+    st.markdown("---")
 
-neighbourhood_group = st.selectbox(
-    "Neighbourhood Group",
-    ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
+    st.subheader("Model Input Features")
+    st.write(
+        """
+        The prediction uses listing information such as:
+        - Location
+        - Neighbourhood group
+        - Room type
+        - Minimum nights
+        - Review activity
+        - Availability
+        - Host listing count
+        """
+    )
+
+    st.markdown("---")
+    st.caption("Developed for AML Group Project")
+
+# -----------------------------
+# Header
+# -----------------------------
+st.markdown('<div class="main-title">Airbnb NYC Price Prediction Dashboard</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="subtitle">Estimate Airbnb listing prices based on property, location, and review-related features.</div>',
+    unsafe_allow_html=True
 )
 
-neighbourhood = st.selectbox(
-    "Neighbourhood",
-    sorted(neighbourhood_price_map.keys())
-)
+# -----------------------------
+# Main layout
+# -----------------------------
+left_col, right_col = st.columns([1.2, 1])
 
-room_type = st.selectbox(
-    "Room Type",
-    ["Entire home/apt", "Private room", "Shared room"]
-)
+with left_col:
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.subheader("📍 Listing Information")
 
-minimum_nights = st.number_input("Minimum Nights", min_value=1, value=1)
-number_of_reviews = st.number_input("Number of Reviews", min_value=0, value=0)
-reviews_per_month = st.number_input("Reviews per Month", min_value=0.0, value=0.0)
-calculated_host_listings_count = st.number_input("Host Listings Count", min_value=1, value=1)
-availability_365 = st.number_input("Availability 365", min_value=0, max_value=365, value=100)
+    col1, col2 = st.columns(2)
 
-if st.button("Predict Price"):
+    with col1:
+        latitude = st.number_input(
+            "Latitude",
+            value=40.7128,
+            step=0.0001,
+            format="%.4f"
+        )
 
-    # Start with all feature columns as 0
+        neighbourhood_group = st.selectbox(
+            "Neighbourhood Group",
+            ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
+        )
+
+        room_type = st.selectbox(
+            "Room Type",
+            ["Entire home/apt", "Private room", "Shared room"]
+        )
+
+        minimum_nights = st.number_input(
+            "Minimum Nights",
+            min_value=1,
+            value=1
+        )
+
+    with col2:
+        longitude = st.number_input(
+            "Longitude",
+            value=-74.0060,
+            step=0.0001,
+            format="%.4f"
+        )
+
+        neighbourhood = st.selectbox(
+            "Neighbourhood",
+            sorted(neighbourhood_price_map.keys())
+        )
+
+        availability_365 = st.number_input(
+            "Availability Per Year",
+            min_value=0,
+            max_value=365,
+            value=100
+        )
+
+        calculated_host_listings_count = st.number_input(
+            "Host Listings Count",
+            min_value=1,
+            value=1
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.subheader("⭐ Review Information")
+
+    review_col1, review_col2 = st.columns(2)
+
+    with review_col1:
+        number_of_reviews = st.number_input(
+            "Number of Reviews",
+            min_value=0,
+            value=0
+        )
+
+    with review_col2:
+        reviews_per_month = st.number_input(
+            "Reviews Per Month",
+            min_value=0.0,
+            value=0.0,
+            step=0.1
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    predict_button = st.button("Predict Airbnb Price")
+
+with right_col:
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.subheader("🗺️ Selected Location Preview")
+
+    map_df = pd.DataFrame({
+        "lat": [latitude],
+        "lon": [longitude]
+    })
+
+    st.map(map_df, zoom=10)
+
+    st.markdown(
+        f"""
+        <p class="small-text">
+        Selected area: <b>{neighbourhood}, {neighbourhood_group}</b><br>
+        Room type: <b>{room_type}</b>
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# -----------------------------
+# Prediction logic
+# -----------------------------
+if predict_button:
+
     input_data = {col: 0 for col in feature_columns}
 
     # Numerical features
@@ -83,7 +274,7 @@ if st.button("Predict Price"):
         default_neighbourhood_encoded
     )
 
-    # Convert to DataFrame in same column order as training
+    # Convert to DataFrame in same feature order as training
     input_df = pd.DataFrame([input_data])[feature_columns]
 
     # Predict log price
@@ -92,5 +283,51 @@ if st.button("Predict Price"):
     # Convert back to actual price
     predicted_price = np.expm1(predicted_log_price)
 
-    st.subheader("Predicted Airbnb Price")
-    st.success(f"Estimated price: ${predicted_price:.2f}")
+    st.markdown("---")
+
+    result_col1, result_col2 = st.columns([1, 1])
+
+    with result_col1:
+        st.markdown(
+            f"""
+            <div class="prediction-card">
+                <div>Estimated Airbnb Listing Price</div>
+                <div class="prediction-price">${predicted_price:.2f}</div>
+                <div>per night</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with result_col2:
+        st.subheader("📋 Listing Summary")
+
+        summary_df = pd.DataFrame({
+            "Feature": [
+                "Neighbourhood Group",
+                "Neighbourhood",
+                "Room Type",
+                "Minimum Nights",
+                "Number of Reviews",
+                "Reviews Per Month",
+                "Availability Per Year",
+                "Host Listings Count"
+            ],
+            "Selected Value": [
+                neighbourhood_group,
+                neighbourhood,
+                room_type,
+                minimum_nights,
+                number_of_reviews,
+                reviews_per_month,
+                availability_365,
+                calculated_host_listings_count
+            ]
+        })
+
+        st.dataframe(summary_df, use_container_width=True)
+
+    st.info(
+        "Note: This is a machine learning estimate based on historical Airbnb NYC listing data. "
+        "The predicted price should be treated as a decision-support value, not a guaranteed market price."
+    )
