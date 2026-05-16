@@ -121,9 +121,9 @@ with st.sidebar:
 # -----------------------------
 # Header
 # -----------------------------
-st.markdown('<div class="main-title">Airbnb NYC Price Prediction Dashboard</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">Group 2 Airbnb NYC Price Prediction Dashboard</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="subtitle">Estimate Airbnb listing prices based on property, location, and review-related features.</div>',
+    '<div class="subtitle">Estimate Airbnb listing prices based on property, location and review.</div>',
     unsafe_allow_html=True
 )
 
