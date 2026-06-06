@@ -69,6 +69,15 @@ st.markdown(
         font-weight: 700;
         font-size: 16px;
     }
+
+    /* Make dropdown and input text clearer */
+    div[data-baseweb="select"] * {
+        font-size: 15px !important;
+    }
+
+    div[data-baseweb="input"] input {
+        font-size: 15px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -149,15 +158,17 @@ with left_col:
             ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
         )
 
-	neighbourhood_options = neighbourhood_group_map.get(
-    	     neighbourhood_group,
-    	     sorted(neighbourhood_price_map.keys())
-	)
+        # Show only neighbourhoods that belong to the selected neighbourhood group.
+        # If the model bundle does not contain neighbourhood_group_map, use all neighbourhoods as a fallback.
+        neighbourhood_options = neighbourhood_group_map.get(
+            neighbourhood_group,
+            sorted(neighbourhood_price_map.keys())
+        )
 
-	neighbourhood = st.selectbox(
-    	    "Neighbourhood",
-    	    neighbourhood_options
-	)
+        neighbourhood = st.selectbox(
+            "Neighbourhood",
+            neighbourhood_options
+        )
 
         room_type = st.selectbox(
             "Room Type",
