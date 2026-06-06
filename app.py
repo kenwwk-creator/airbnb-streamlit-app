@@ -87,6 +87,9 @@ neighbourhood_price_map = bundle["neighbourhood_price_map"]
 # This lets the app hide latitude and longitude inputs from users.
 neighbourhood_coord_map = bundle.get("neighbourhood_coord_map", {})
 
+# Load valid neighbourhoods for each neighbourhood group
+neighbourhood_group_map = bundle.get("neighbourhood_group_map", {})
+
 default_neighbourhood_encoded = bundle["default_neighbourhood_encoded"]
 
 # -----------------------------
@@ -146,10 +149,15 @@ with left_col:
             ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
         )
 
-        neighbourhood = st.selectbox(
-            "Neighbourhood",
-            sorted(neighbourhood_price_map.keys())
-        )
+	neighbourhood_options = neighbourhood_group_map.get(
+    	     neighbourhood_group,
+    	     sorted(neighbourhood_price_map.keys())
+	)
+
+	neighbourhood = st.selectbox(
+    	    "Neighbourhood",
+    	    neighbourhood_options
+	)
 
         room_type = st.selectbox(
             "Room Type",
